@@ -3,6 +3,17 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 
+const pages = ["about"];
+
+const pagesMap = pages.map((name) => {
+  return new HtmlWebpackPlugin({
+    template: `./src/pages/${name}.pug`,
+    filename: `./${name}.html`,
+    chunks: [`${name}`],
+    hash: true,
+  });
+});
+
 const babelRules = {
   test: /\.m?js$/i,
   exclude: /(node_modules|bower_components)/,
@@ -48,6 +59,7 @@ const sassRules = {
 module.exports = {
   entry: {
     index: "./src/index.js",
+    about: "./src/js/about.js",
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -62,8 +74,9 @@ module.exports = {
     new CleanWebpackPlugin({
       cleanStaleWebpackAssets: true,
     }),
-  ],
+  ].concat(pagesMap),
   output: {
+    publicPath: "/",
     path: path.resolve(__dirname, "dist"),
     filename: "js/[name].[chunkhash].js",
   },
